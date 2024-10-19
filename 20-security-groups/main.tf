@@ -62,6 +62,18 @@ module "app_alb" {
 
 }
 
+module "web_alb" {
+    source = "../../terraform-security-group-module"
+    project_name = var.project_name
+    sg_name = "web_alb-sg"
+    environment_name = var.environment_name
+    vpc_id = local.vpc_id
+    common_tags = var.common_tags
+    sg_tags = var.app_alb_sg_tags
+
+}
+
+
 module "vpn" {
     source = "../../terraform-security-group-module"
     project_name = var.project_name
@@ -277,5 +289,56 @@ resource "aws_security_group_rule" "backend_vpn_8080" {
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.backend.sg_id
+
+}
+
+resource "aws_security_group_rule" "web_alb_http" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb.sg_id
+
+}
+
+resource "aws_security_group_rule" "web_alb_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb.sg_id
+
+}
+
+
+resource "aws_security_group_rule" "frontend_vpn" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id = module.frontend.sg_id
+
+}
+
+resource "aws_security_group_rule" "web_alb_frontend" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.web_alb.sg_id
+  security_group_id = module.frontend.sg_id
+
+}
+
+resource "aws_security_group_rule" "frontend_app_alb" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.frontend.sg_id
+  security_group_id = module.app_alb.sg_id
 
 }

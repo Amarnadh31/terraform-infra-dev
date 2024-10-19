@@ -9,7 +9,7 @@ terraform {
 
   backend "s3" {
     bucket = "demo-bucket-31"
-    key = "expense-sebastian-dev"
+    key = "expense-acm-dev"
     region = "us-east-1"
     dynamodb_table= "demo_key" 
     

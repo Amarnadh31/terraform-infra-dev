@@ -34,7 +34,7 @@ resource "aws_lb_listener" "http" {
 }
 
 
-module "records" {
+module "backend" {
   source  = "terraform-aws-modules/route53/aws//modules/records"
 
   zone_name = var.zone_name
@@ -51,3 +51,4 @@ module "records" {
     }
   ]
 }
+

@@ -14,11 +14,6 @@ variable "common_tags" {
     }
 }
 
-variable "backend_tags" {
-    default = {
-        component = "backend"
-    }
-}
 
 variable "zone_name" {
     default = "expensemind.online"
